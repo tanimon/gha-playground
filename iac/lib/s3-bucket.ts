@@ -16,6 +16,7 @@ export const createS3Buckets = ({
     bucketName: `${accountId}-images`, // S3バケット名は大文字禁止のためケバブケース
     blockPublicAccess: cdk.aws_s3.BlockPublicAccess.BLOCK_ALL,
     encryption: cdk.aws_s3.BucketEncryption.S3_MANAGED,
+    versioned: true,
   });
 
   return { imagesBucket };
