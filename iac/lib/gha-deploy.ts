@@ -27,7 +27,7 @@ export const createGhaDeployResources = ({
           'token.actions.githubusercontent.com:sub': principalFederatedSub,
         },
       },
-      'sts:AssumeRoleWithWebIdentity' //これを忘れるとStatementのActionが'sts:AssumeRole'となりOIDCでのAssumeRoleで使えなくなる。
+      'sts:AssumeRoleWithWebIdentity' // これを忘れるとStatementのActionが'sts:AssumeRole'となりOIDCでのAssumeRoleで使えなくなる。
     ),
   });
 
