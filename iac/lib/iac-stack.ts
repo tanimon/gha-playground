@@ -10,11 +10,13 @@ export class IacStack extends cdk.Stack {
 
     const accountId = this.account;
 
-    createS3Buckets({ construct: this, accountId });
-    createDdbTables({ construct: this });
+    const { imagesBucket } = createS3Buckets({ construct: this, accountId });
+    const { usersTable } = createDdbTables({ construct: this });
     createGhaDeployResources({
       construct: this,
       principalFederatedSub: 'repo:tanimon/gha-playground:ref:refs/heads/*',
+      imagesBucket,
+      usersTable,
     });
   }
 }

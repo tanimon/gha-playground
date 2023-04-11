@@ -5,9 +5,13 @@ import { Construct } from 'constructs';
 export const createGhaDeployResources = ({
   construct,
   principalFederatedSub,
+  imagesBucket,
+  usersTable,
 }: {
   construct: Construct;
   principalFederatedSub: string;
+  imagesBucket: cdk.aws_s3.Bucket;
+  usersTable: cdk.aws_dynamodb.Table;
 }): void => {
   const gitHubIdProvider = new cdk.aws_iam.OpenIdConnectProvider(
     construct,
@@ -39,7 +43,26 @@ export const createGhaDeployResources = ({
 
   const deployPolicy = new cdk.aws_iam.Policy(construct, 'deployPolicy', {
     policyName: 'deployPolicy',
-    statements: [administratorAccessPolicyStatement],
+    statements: [
+      administratorAccessPolicyStatement,
+      new cdk.aws_iam.PolicyStatement({
+        effect: cdk.aws_iam.Effect.DENY,
+        actions: [
+          'dynamodb:BatchGetItem',
+          'dynamodb:ConditionCheckItem',
+          'dynamodb:PartiQLSelect',
+          'dynamodb:GetItem',
+          'dynamodb:Scan',
+          'dynamodb:Query',
+        ],
+        resources: [usersTable.tableArn],
+      }),
+      new cdk.aws_iam.PolicyStatement({
+        effect: cdk.aws_iam.Effect.DENY,
+        actions: ['s3:GetObject*'],
+        resources: [imagesBucket.arnForObjects('*')],
+      }),
+    ],
   });
 
   oidcDeployRole.attachInlinePolicy(deployPolicy);
