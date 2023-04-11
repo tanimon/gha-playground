@@ -16,6 +16,9 @@ export const createDdbTables = ({
       name: 'id',
       type: cdk.aws_dynamodb.AttributeType.STRING,
     },
+    pointInTimeRecovery: true,
+    billingMode: cdk.aws_dynamodb.BillingMode.PAY_PER_REQUEST,
+    removalPolicy: cdk.RemovalPolicy.RETAIN,
   });
 
   return { usersTable };
