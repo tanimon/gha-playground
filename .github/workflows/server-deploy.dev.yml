@@ -1,0 +1,13 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'iac/**'
+      - 'server/**'
+
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/server-deploy.yml
+    with:
+      awsRoleArn: arn:aws:iam::730384364956:role/github-oidc-role

@@ -5,12 +5,14 @@
     "iac": "bin/iac.js"
   },
   "scripts": {
+    "bootstrap:DEV": "cdk bootstrap",
     "build": "tsc",
     "cdk": "cdk",
     "check": "run-p check:*",
     "check:format": "prettier --cache -c '**/*.{ts,json,yml,yaml,md}'",
     "check:lint": "eslint --cache --max-warnings 0 '**/*.ts'",
     "check:tsc": "tsc",
+    "deploy": "cdk deploy '*' --require-approval never",
     "fix": "run-s fix:format fix:lint check:tsc",
     "fix:format": "prettier --cache --write '**/*.{ts,json,yml,yaml,md}'",
     "fix:lint": "eslint --cache --max-warnings 0 --fix '**/*.{ts,tsx}'",
