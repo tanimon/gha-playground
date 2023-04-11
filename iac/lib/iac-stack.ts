@@ -1,16 +1,20 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { createDdbTables } from './ddb-table';
+import { createGhaDeployResources } from './gha-deploy';
+import { createS3Buckets } from './s3-bucket';
 
 export class IacStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const accountId = this.account;
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'IacQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    createS3Buckets({ construct: this, accountId });
+    createDdbTables({ construct: this });
+    createGhaDeployResources({
+      construct: this,
+      principalFederatedSub: 'repo:tanimon/gha-playground:ref:refs/heads/*',
+    });
   }
 }
