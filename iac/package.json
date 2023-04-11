@@ -5,7 +5,7 @@
     "iac": "bin/iac.js"
   },
   "scripts": {
-    "bootstrap:DEV": "cdk bootstrap",
+    "bootstrap": "cdk bootstrap",
     "build": "tsc",
     "cdk": "cdk",
     "check": "run-p check:*",
