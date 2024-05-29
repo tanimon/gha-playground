@@ -23,3 +23,5 @@ jobs:
 
       - run: poetry install -C poetry-demo
 
+      - run: python --version
+      - run: poetry --version
