@@ -1,0 +1,25 @@
+on:
+  push:
+
+jobs:
+  server-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install poetry
+        # uses: abatilo/actions-poetry@v3
+        # with:
+        #   poetry-version: '1.8.3'
+        # actionを使わなくても以下でインストールできるかも
+        run: pipx install poetry==1.8.3
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version-file: 'pyproject.toml'
+          cache: 'poetry'
+
+      - run: poetry install -C poetry-demo
+
