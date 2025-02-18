@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 env:
-  repo-name: tanimon/tanimon
+  repo-name: tanimon/dummy-private-repo
 
 jobs:
   checkout-another-repo-without-token:
@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: ${{ env.repo-name }}
+      - run: cat README.md
 
   checkout-another-repo-with-token:
     runs-on: ubuntu-latest
@@ -27,3 +28,4 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
           persist-credentials: false
+      - run: cat README.md
