@@ -10,27 +10,56 @@ jobs:
   checkout-another-repo-without-token:
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@v4
-      #   with:
-      #     repository: ${{ env.repo-name }}
-      #     ref: ${{ env.ref }}
-      - run: git clone "https://github.com/${{ env.repo-name }}.git"
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.repo-name }}
+          ref: ${{ env.ref }}
+
       - run: cat README.md
 
   checkout-another-repo-with-token:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/create-github-app-token@v1
-        id: app-token
+      - name: Generate token with tibdex/github-app-token
+        id: tibdex
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Generate token with actions/create-github-app-token
+        id: gha
+        uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
-      # - uses: actions/checkout@v4
-      #   with:
-      #     repository: ${{ env.repo-name }}
-      #     ref: ${{ env.ref }}
-      #     token: ${{ steps.app-token.outputs.token }}
-      #     # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
-      #     persist-credentials: false
-      - run: git clone "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ env.repo-name }}.git"
+
+      - name: who am i with actions/create-github-app-token?
+        run: gh auth status
+        env:
+          GH_TOKEN: ${{ steps.gha.outputs.token }}
+
+      - name: who am i with tibdex/github-app-token?
+        run: gh auth status
+        env:
+          GH_TOKEN: ${{ steps.tibdex.outputs.token }}
+
+      - name: Checkout with actions/create-github-app-token
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.repo-name }}
+          ref: ${{ env.ref }}
+          token: ${{ steps.gha.outputs.token }}
+          # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
+          persist-credentials: false
+
+      - name: Checkout with tibdex/github-app-token
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.repo-name }}
+          ref: ${{ env.ref }}
+          token: ${{ steps.tibdex.outputs.token }}
+          # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
+          persist-credentials: false
+
       - run: cat README.md
