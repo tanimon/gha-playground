@@ -1,0 +1,62 @@
+name: Playground for GitHub API with app token
+on:
+  workflow_dispatch:
+
+env:
+  repo-name: tanimon/dummy-private-repo
+  ref: main
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: who am i?
+        run: gh auth status
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.repo-name }}
+          ref: ${{ env.ref }}
+          token: ${{ steps.generate-token.outputs.token }}
+          # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
+          persist-credentials: false
+
+      - run: cat README.md
+
+      - name: Update README.md
+        run: |
+          git switch -c "update-readme-from-workflow"
+          echo "Updated from GitHub Actions workflow!" >> README.md
+          git add README.md
+          git commit -m "Update README.md"
+          git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ env.repo-name }}.git
+          git push -u origin update-readme-from-workflow
+
+      - name: Create a pull request
+        run: |
+          gh pr create --base main --head update-readme-from-workflow --title "Update README.md from GitHub Actions workflow" --body "This is a test pull request created from GitHub Actions workflow."
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+
+      - name: Merge the pull request
+        run: |
+          gh pr merge --auto --delete-branch
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+
+  dispatch-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch workflow
+        run: |
+          gh workflow run hello.yml --field name=tanimon
