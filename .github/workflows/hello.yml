@@ -1,11 +1,11 @@
 name: Hello
 on:
   workflow_dispatch:
-
-inputs:
-  name:
-    description: 'Name to greet'
-    required: true
+    inputs:
+      name:
+        description: 'Name to greet'
+        required: true
+        type: string
 
 jobs:
   hello:
