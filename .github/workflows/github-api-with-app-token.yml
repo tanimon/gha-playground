@@ -55,13 +55,16 @@ jobs:
 
       - name: Merge the pull request
         run: |
-          gh pr merge --auto --delete-branch
+          gh pr merge --merge --delete-branch
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
 
   dispatch-workflow:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Dispatch workflow
         run: |
           gh workflow run hello.yml --field name=tanimon
