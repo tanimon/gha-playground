@@ -33,13 +33,18 @@ jobs:
 
       - run: cat README.md
 
+      - name: Set up git config
+        run: |
+          git config --global url."https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/".insteadOf "https://github.com/"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
       - name: Update README.md
         run: |
           git switch -c "update-readme-from-workflow"
           echo "Updated from GitHub Actions workflow!" >> README.md
           git add README.md
           git commit -m "Update README.md"
-          git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ env.repo-name }}.git
           git push -u origin update-readme-from-workflow
 
       - name: Create a pull request
@@ -60,3 +65,5 @@ jobs:
       - name: Dispatch workflow
         run: |
           gh workflow run hello.yml --field name=tanimon
+        env:
+          GH_TOKEN: ${{ github.token }}
